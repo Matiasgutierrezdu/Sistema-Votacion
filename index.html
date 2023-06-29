@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title> Sistema Votación </title>
+    <script src="//code.jquery.com/jquery-1.11.2.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- SCRIPT ENVIO DE DATOS A BASE DE DATOS -->
+    <script>
+        $(document).on('ready', function() {
+          $('#btn-votar').click(function() {
+
+            
+            var url = "datos_formulario.php";
+            $.ajax({
+              type: "POST",
+              url: url,
+              data: $("#formulario").serialize(),
+              success: function(data) {
+
+                $('#resp').html(data);
+              }
+            });
+          });
+        });
+      </script>
+
+
+
+</head>
+  <body>
+    <h1>FORMULARIO DE VOTACIÓN</h1>
+    <form id="formulario"  method="POST" >
+        <div class="form-group">
+            <label for="nombre"><strong>Nombre y apellido</strong></label>
+            <input type="text" id="nombre" name="nombre" required></input>
+        </div>
+        <div class="form-group">
+            <label><strong>Alias</strong></label>
+            <input type="text" name="alias"   pattern="[A-Za-z0-9]{5,20}" required></input>
+        </div>
+        <div class="form-group">
+            <label><strong>Rut</strong></label>
+            <input type="text" name="rut" required oninput="checkRut(this)"></input>
+        </div>
+        <div class="form-group">
+            <label><strong>Email</strong></label>
+            <input type="email" name="email" id="rut" pattern="[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*@[a-zA-Z0-9_]+([.][a-zA-Z0-9_]+)*[.][a-zA-Z]{1,5}" required></input>
+        </div>
+
+
+        <div class="form-group">
+            <label><strong>Region</strong></label>
+            <select name="region" id='select1' required>
+                <option value="">Seleccione una opción</option>
+            </select>
+        </div>
+
+
+        <div class="form-group">
+            <label><strong>Comuna</strong></label>
+            <select name="comuna" id='select2' required>
+                <option value="">Seleccione una opción</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label><strong>Candidato</strong></label>
+            <select name="candidato" id='candidato' required>
+                <option value="">Seleccione una opción</option>
+                
+            </select>
+        </div>
+
+        <!-- CHECKBOX COMO SE ENTERO DE NOSOTROS -->
+        <div class="form-group">
+            <label><strong>Como se entero de nosotros</strong></label>
+            <input type="checkbox" name="nosotros[]" value="1"> Web
+            <input type="checkbox" name="nosotros[]" value="2"> TV
+            <input type="checkbox" name="nosotros[]"  value="3"> Redes Sociales
+            <input type="checkbox" name="nosotros[]" value="4"> Amigo              
+        </div>
+
+
+        <input type="submit" id="btn-votar"  value="Votar" />
+
+
+
+    </form>
+
+    <!-- SCRIPT VALIDACION CHECKBOX -->
+    <script>
+        const formulario = document.getElementById("formulario");
+        formulario.addEventListener("submit", validarCheckbox);
+      
+        function validarCheckbox(event) {
+          const checkboxes = document.querySelectorAll("input[name='nosotros[]']");
+          let seleccionados = 0;
+      
+          checkboxes.forEach(function(checkbox) {
+            if (checkbox.checked) {
+              seleccionados++;
+            }
+          });
+      
+          if (seleccionados < 2) {
+            event.preventDefault(); // Evita que el formulario se envíe
+            alert("Debe seleccionar al menos dos opciones");
+            return;
+          }
+        }
+      </script>
+
+    <!-- SCRIPT RECIBE EL LISTADO DE REGIONES -->
+
+    <script>
+        const tabla = document.querySelector('#select1');
+        const opciones= {
+            method: 'POST',
+        }
+        fetch('regiones.php',opciones)
+            .then(respuesta => respuesta.json())
+            .then(resultado =>{
+                console.log(resultado);
+                resultado.forEach(elemento => {
+                    tabla.innerHTML += `
+                        <option value=${elemento.region_id}>${elemento.region_nombre}</option>
+                `
+                });
+            });
+    </script>
+
+    <!-- SCRIPT RECIBE EL LISTADO DE COMUNAS PROVENIENTE DE REGIONES -->
+
+<script>
+    const select1 = document.querySelector('#select1');
+    const select2 = document.querySelector('#select2');
+
+    select1.addEventListener('change', function() {
+        const selectedValue = select1.value;
+
+        const tabla = document.querySelector('#select2');
+        const opciones = {
+            method: 'POST',
+           
+        };
+        console.log(opciones)
+
+        fetch(`comuna.php?seleccionar=${selectedValue}`, opciones)
+            .then(respuesta => respuesta.json())
+            
+            .then(resultado =>{
+    select2.innerHTML = '';
+
+
+                console.log(resultado);
+                resultado.forEach(elemento => {
+                    tabla.innerHTML += `
+                        <option value=${elemento.comuna_id}>${elemento.comuna_nombre}</option>
+                `
+                });
+            });
+    });
+</script>
+
+    <!-- SCRIPT RECIBE EL LISTADO DE CANDIDATOS -->
+
+<script>
+    const candidato = document.querySelector('#candidato');
+    const opc= {
+        method: 'POST',
+    }
+    fetch('candidato.php',opc)
+        .then(respuesta => respuesta.json())
+        .then(resultado =>{
+            console.log(resultado);
+            resultado.forEach(elemento => {
+                candidato.innerHTML += `
+                    <option value=${elemento.candidato_id}>${elemento.candidato_nombre}</option>
+            `
+            });
+        });
+</script>
+
+
+    <!-- SCRIPT VALIDACION DE RUT -->
+
+  <script>
+  function checkRut(rut) {
+    // Despejar Puntos
+    var valor = rut.value.replace('.','');
+    // Despejar Guión
+    valor = valor.replace('-','');
+    
+    // Aislar Cuerpo y Dígito Verificador
+    cuerpo = valor.slice(0,-1);
+    dv = valor.slice(-1).toUpperCase();
+    
+    // Formatear RUN
+    rut.value = cuerpo + '-'+ dv
+    
+    // Si no cumple con el mínimo ej. (n.nnn.nnn)
+    if(cuerpo.length < 7) { rut.setCustomValidity("RUT Incompleto"); return false;}
+    
+    // Calcular Dígito Verificador
+    suma = 0;
+    multiplo = 2;
+    
+    // Para cada dígito del Cuerpo
+    for(i=1;i<=cuerpo.length;i++) {
+    
+        // Obtener su Producto con el Múltiplo Correspondiente
+        index = multiplo * valor.charAt(cuerpo.length - i);
+        
+        // Sumar al Contador General
+        suma = suma + index;
+        
+        // Consolidar Múltiplo dentro del rango [2,7]
+        if(multiplo < 7) { multiplo = multiplo + 1; } else { multiplo = 2; }
+  
+    }
+    
+    // Calcular Dígito Verificador en base al Módulo 11
+    dvEsperado = 11 - (suma % 11);
+    
+    // Casos Especiales (0 y K)
+    dv = (dv == 'K')?10:dv;
+    dv = (dv == 0)?11:dv;
+    
+    // Validar que el Cuerpo coincide con su Dígito Verificador
+    if(dvEsperado != dv) { rut.setCustomValidity("RUT Inválido"); return false; }
+    
+    // Si todo sale bien, eliminar errores (decretar que es válido)
+    rut.setCustomValidity('');
+}
+  </script>
+
+  </body>
+</html>
