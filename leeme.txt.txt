@@ -3,29 +3,29 @@ Sistema de votacion Matias Gutierrez
 El sistema fue creado y ejecutado en ambiente local mediante el software XAMPP,
 con su sistema de gestion de base de datos MySQL y servidor web Apache.
 
--- Configuraciones de ejecucion:
+Configuraciones de ejecucion:
 
-1- Abrir carpeta en SuDisco:\xampp\htdocs
+1- Crear una carpeta en SuDisco:\xampp\htdocs
 2- Abrir git bash dento de la carpeta htdocs
 3- Ingresar el comando: git clone https://github.com/Matiasgutierrezdu/Sistema-Votacion.git
 4- Visualizar la correcta creacion de carpetas
 5- Abrir mediante editor de codigo la carpeta creada
 6- Dar inicio a Apache y MySQL en Xampp
 
+
 -- Para importar base de datos ---
 
 7- Ingresar a la direccion: localhost, ingresar a phpMyAdmin
 8- Crear nueva base de datos
-9- Ir a Importar desde carpeta sql archivo de base de datos: db.sql luego continuar.
+9- Ir a importar desde archivo sql desde carpeta: sql/votosdb.sql
 
 -- Ingreso sistema --
 
 10- Ingresar en el navegador el siguiente enlace: http://localhost/sistemavotacion/
 
 
-Cuentas de prueba: 
-Nombre y apellido: Jorge Soto - Alias: Jorge20 - Rut: 17097076-4 - Email: jorge@gmail.com 
-Region: Bio-Bio - Comuna: Arauco - Candidato: Jose Antonio Kast - Como se entero: Web y TV
+Cuentas de prueba: nombre: Jorge Soto - Alias: Jorge20 - Rut: 17097076-4 - Email: jorge@gmail.com 
+- Region: Bio-Bio - Comuna: Arauco - Candidato: Jose Antonio Kast - Como se entero: Web y TV
 
 Construido con:
 
